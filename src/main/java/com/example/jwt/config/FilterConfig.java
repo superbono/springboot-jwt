@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 // 커스텀필터를 사용할 수 있도록 설정하는 곳.
+// 이렇게 설정하게 되면, SecurityConfig에서 설정한 필터가 있다면 그 필터가 먼저 실행되고, 여기서 설정한 필터들이 실행된다.
 @Configuration
 public class FilterConfig {
 

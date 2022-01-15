@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -35,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // http.addFilterBefore(new MyFilter_jwt(), BasicAuthenticationFilter.class);
         // 이런 커스텀필터를 securityConfig에서 정의하지 않아도 된다.
         // 필터만 정의할 수 있는 filterConfig를 만들어서 이곳에 정의해도 된다.
+
+        http.addFilterBefore(new MyFilter_jwt(), SecurityContextPersistenceFilter.class);
 
         // csrf는 Cross site Request forgery를 말하며, 정상적인 사용자가 의도치 않은 위조요청을 보내는 것을 말한다.
         http.csrf().disable();

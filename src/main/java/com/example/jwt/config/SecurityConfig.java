@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                    // 그래서 header안에 Authorization속성을 추가해서 token을 생성해서 전달하는 방법을 쓴다.
                                    // 이런 방식을 Bearer(Token을 들고가는 방식)라고 한다.
                                    // token을 사용하게 될 경우, 유효시간이 되면 토큰은 사라진다.
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository)) // formLogin().disable()했기 때문에, /login의 요청을 받기 위해 JwtAuthenticationFilter를 등록해줬는데,
+            .addFilter(new JwtAuthorizationFilter(authenticationManager()) )// formLogin().disable()했기 때문에, /login의 요청을 받기 위해 JwtAuthenticationFilter를 등록해줬는데,
                                                       // addFilter에서 받아야 하는 파라미터가 있다. AuthenticationManager를 보내줘야한다.
                                                       // WebSecurityConfigurerAdapter안에 AuthenticationManager가 있다.
             .authorizeRequests()

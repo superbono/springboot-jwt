@@ -34,6 +34,9 @@ public class JwtAuthorizationFilter extends UsernamePasswordAuthenticationFilter
     // 로그인 시도를 할 수 있게 만들어 줘야 한다.
     // /login 요청을 하게 되면 해당 유저정보를 통해서 로그인 시도를 할 수 있게 된다.
     // authenticationManager로 로그인 시도를 하게 되면 PrincipalDetailsService가 호출
+    // loadUserByUsername가 실행 (PrincipalDetailsService안에 구현된 함수)
+    // 그다음 PrincipalDetails를 세션에 담고 -> PrincipalDetails을 세션에 안담으면 권한관리가 안된다. => USER, MANAGER, ADMIN
+    // jwt토큰을 만들어 응답
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         System.out.println("JwtAuthorizationFilter : 진입");

@@ -17,7 +17,7 @@ public class IndexController {
 
     @PostMapping("/token")
     public String token() {
-        return "<h1>Token</h1>";
+        return "<h1>Token12</h1>";
     }
 
 }

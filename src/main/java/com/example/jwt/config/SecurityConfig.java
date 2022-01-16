@@ -1,7 +1,10 @@
 package com.example.jwt.config;
 
-import com.example.jwt.filter.MyFilter_jwt;
+
+import com.example.jwt.config.jwt.JwtAuthorizationFilter;
+import com.example.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,14 +12,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserRepository userRepository;
 
     private final CorsFilter corsFilter;
 
@@ -37,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 이런 커스텀필터를 securityConfig에서 정의하지 않아도 된다.
         // 필터만 정의할 수 있는 filterConfig를 만들어서 이곳에 정의해도 된다.
 
-        http.addFilterBefore(new MyFilter_jwt(), SecurityContextPersistenceFilter.class);
+        //http.addFilterBefore(new MyFilter_jwt(), SecurityContextPersistenceFilter.class);
 
         // csrf는 Cross site Request forgery를 말하며, 정상적인 사용자가 의도치 않은 위조요청을 보내는 것을 말한다.
         http.csrf().disable();
@@ -52,6 +56,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                    // 그래서 header안에 Authorization속성을 추가해서 token을 생성해서 전달하는 방법을 쓴다.
                                    // 이런 방식을 Bearer(Token을 들고가는 방식)라고 한다.
                                    // token을 사용하게 될 경우, 유효시간이 되면 토큰은 사라진다.
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository)) // formLogin().disable()했기 때문에, /login의 요청을 받기 위해 JwtAuthenticationFilter를 등록해줬는데,
+                                                      // addFilter에서 받아야 하는 파라미터가 있다. AuthenticationManager를 보내줘야한다.
+                                                      // WebSecurityConfigurerAdapter안에 AuthenticationManager가 있다.
             .authorizeRequests()
             .antMatchers("/api/v1/user/**")
             .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")

@@ -25,8 +25,6 @@ public class User {
     private String username;
     private String password;
     private String roles;
-    @CreationTimestamp
-    private Timestamp createDate;
 
     public List<String> getRoleList() {
         if(this.roles.length() > 0) {
@@ -36,10 +34,9 @@ public class User {
     }
 
     @Builder
-    public User(String username, String password, String roles, Timestamp createDate) {
+    public User(String username, String password, String roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
-        this.createDate = createDate;
     }
 }

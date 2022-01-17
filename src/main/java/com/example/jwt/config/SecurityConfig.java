@@ -27,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 시큐리티 암호화 Bean으로 등록
     // Bean으로 등록하게 되면 해당 메서드의 리턴되는 오브젝트를 Ioc로 등록해준다.
     @Bean
-    public BCryptPasswordEncoder encodePwd() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

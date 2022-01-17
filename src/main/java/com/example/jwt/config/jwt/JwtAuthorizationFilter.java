@@ -1,14 +1,19 @@
 package com.example.jwt.config.jwt;
 
+import com.example.jwt.config.auth.PrincipalDetails;
+import com.example.jwt.model.User;
 import com.example.jwt.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 // 스프링 시큐리티에서 UsernamePasswordAuthenticationFilter가 있다.
@@ -42,6 +47,27 @@ public class JwtAuthorizationFilter extends UsernamePasswordAuthenticationFilter
         System.out.println("JwtAuthorizationFilter : 진입");
         // username, password를 입력후에
         // 로그인 시도해야함.
-        return super.attemptAuthentication(request, response);
+
+
+        try {
+            ObjectMapper om = new ObjectMapper();
+            User user = om.readValue(request.getInputStream(), User.class);
+            System.out.println(user);
+
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword());
+
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            System.out.println("유저정보"+principalDetails.getUser().getUsername());
+            System.out.println("=====================1");
+            // authentication 객체가 session영역에 저장됨.
+            return authentication;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            System.out.println("=====================2");
+            return null;
+
     }
 }

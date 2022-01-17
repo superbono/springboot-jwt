@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+//@RequestMapping("/api/v1/")
 public class IndexController {
 
     private final UserRepository repository;
@@ -33,6 +34,21 @@ public class IndexController {
         user.setRoles("ROLE_USER");
         repository.save(user);
         return "회원가입완료";
+    }
+
+    @GetMapping("/api/v1/user")
+    public String user() {
+        return "user";
+    }
+
+    @GetMapping("/api/v1/manager")
+    public String manager() {
+        return "manager";
+    }
+
+    @GetMapping("/api/v1/admin")
+    public String admin() {
+        return "admin";
     }
 
 }

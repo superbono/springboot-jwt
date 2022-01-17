@@ -1,6 +1,7 @@
 package com.example.jwt.config;
 
 
+import com.example.jwt.config.jwt.JwtAuthenticationFilter;
 import com.example.jwt.config.jwt.JwtAuthorizationFilter;
 import com.example.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserRepository userRepository;
-
+    private final UserRepository userRepository;
     private final CorsFilter corsFilter;
 
     // 시큐리티 암호화 Bean으로 등록
@@ -50,15 +49,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             // 필터를 추가해 주겠다고 설정하는곳
             .addFilter(corsFilter) // 인증이 필요하지 않은 곳에는 @CrossOrigin으로 해결가능/ 인증이 필요한 곳은 필터를 등록해줘야 한다.
+            .addFilter(new JwtAuthenticationFilter(authenticationManager()) )// formLogin().disable()했기 때문에, /login의 요청을 받기 위해 JwtAuthenticationFilter를 등록해줬는데,
+            // addFilter에서 받아야 하는 파라미터가 있다. AuthenticationManager를 보내줘야한다.
+            // WebSecurityConfigurerAdapter안에 AuthenticationManager가 있다.
+            .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository) )// formLogin().disable()했기 때문에, /login의 요청을 받기 위해 JwtAuthenticationFilter를 등록해줬는데,
+            // addFilter에서 받아야 하는 파라미터가 있다. AuthenticationManager를 보내줘야한다.
+            // WebSecurityConfigurerAdapter안에 AuthenticationManager가 있다.
             .formLogin().disable()
             .httpBasic().disable() // http로 요청 보낼때에는 노출이 될 가능성이 있다. / https(Secure)로 보냈을 시에는 노출x
                                    // 기존 httpBasic을 사용할 경우에, 폼로그인을 통해서 header id, pw를 보내게 되는데 이때에는 개인정보가 노출될 수 있다.
                                    // 그래서 header안에 Authorization속성을 추가해서 token을 생성해서 전달하는 방법을 쓴다.
                                    // 이런 방식을 Bearer(Token을 들고가는 방식)라고 한다.
                                    // token을 사용하게 될 경우, 유효시간이 되면 토큰은 사라진다.
-            .addFilter(new JwtAuthorizationFilter(authenticationManager()) )// formLogin().disable()했기 때문에, /login의 요청을 받기 위해 JwtAuthenticationFilter를 등록해줬는데,
-                                                      // addFilter에서 받아야 하는 파라미터가 있다. AuthenticationManager를 보내줘야한다.
-                                                      // WebSecurityConfigurerAdapter안에 AuthenticationManager가 있다.
             .authorizeRequests()
             .antMatchers("/api/v1/user/**")
             .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
